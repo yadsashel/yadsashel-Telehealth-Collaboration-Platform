@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patients</title>
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="{{ url_for ('nurse_dash') }}"><span class="icon">🏠</span> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_patient') }}"><span class="icon">👥</span> Patients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_mess') }}"><span class="icon">✉️</span> Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_prf') }}"><span class="icon">⚙️</span> Profile</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">N</div>
+                <div class="user-info">
+                    <span class="user-role">Nurse Account</span>
+                    <span class="user-name">Michael Rodriguez</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h1>Nurse Dashboard</h1>
+                </div>
+                <div class="user-actions">
+                    <button class="notification-btn">🔔</button>
+                    <div class="avatar">N</div>
+                </div>
+            </header>
+
+
+            <!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">
+          <span>{{ message }}</span>
+          <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+             <section class="nur_pat_sec">
+             <!-- Tabs -->
+  <div class="tab-buttons">
+    <button class="tab-button active" onclick="showTab('vitals')">Patient Vitals</button>
+    <button class="tab-button" onclick="showTab('other')">Another Tab</button>
+  </div>
+
+  <!-- Patient Vitals Tab -->
+  <div class="tab-content active" id="vitals">
+    <div class="card">
+      <div class="card-header">
+        <div class="patient-info">
+          <div class="avatar">S</div>
+          <div class="patient-details">
+            <h4>Sarah Johnson</h4>
+            <p>35 yrs, Female • Updated 10 minutes ago</p>
+          </div>
+        </div>
+        <button class="tab-button">New Record</button>
+      </div>
+
+      <div class="vitals-grid">
+        <div class="vital-box">
+          <p class="vital-label">Temperature</p>
+          <p class="vital-value">99.1°F</p>
+        </div>
+        <div class="vital-box">
+          <p class="vital-label">Blood Pressure</p>
+          <p class="vital-value">122/78</p>
+        </div>
+        <div class="vital-box">
+          <p class="vital-label">Heart Rate</p>
+          <p class="vital-value">72 bpm</p>
+        </div>
+        <div class="vital-box">
+          <p class="vital-label">O₂ Saturation</p>
+          <p class="vital-value">98%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Another Tab -->
+  <div class="tab-content" id="other">
+    <div class="card">
+      <p>This is another tab's content.</p>
+    </div>
+  </div>
+
+    </section>
+    </div>
+
+    
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+</body>
+</html>

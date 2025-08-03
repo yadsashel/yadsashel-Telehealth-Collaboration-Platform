@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telehealth Collaboration Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <!-- AOS CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+</head>
+
+<body>
+
+
+    <!-- Navigation Bar -->
+    <header>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">
+        <img class="logo_roni" src="../static/assets/Icons/mainIcon.png" alt="">
+      </div>
+    </div>
+
+    <nav>
+      <div class="menu-toggle" id="mobile-menu">
+        &#9776; <!-- hamburger icon (simple text) -->
+      </div>
+      <ul class="nav-menu">
+        <li><a href="{{ url_for('index') }}" class="active">Home</a></li>
+        <li><a href="{{ url_for('about') }}">About</a></li>
+        <li><a href="{{ url_for('services') }}">Services</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-buttons">
+      <a href="{{ url_for('login') }}" class="btn btn-outline">Log In</a>
+      <a href="{{ url_for('register') }}" class="btn btn-primary">Sign Up</a>
+    </div>
+  </div>
+</header>
+
+
+    <!-- Hero Section -->
+    <section class="hero" data-aos="fade-up">
+        <div class="container">
+            <div class="hero-content" data-aos="fade-right" data-aos-delay="200">
+                <h1>Telehealth Collaboration<span>Platform</span></h1>
+                <p>Revolutionizing telehealth with secure virtual consultations, prescription management, and personalized care — all in one platform.</p>
+                <div class="hero-cta" data-aos="fade-up" data-aos-delay="400">
+                    <a href="{{ url_for ('register') }}" class="btn btn-primary btn-lg">Get Started</a>
+                    <a href="#" class="btn btn-video">
+                        <span class="video-icon"><i class="fas fa-play"></i></span>
+                        <span>How it works</span>
+                    </a>
+                </div>
+                <div class="hero-stats" data-aos="fade-up" data-aos-delay="600">
+                    <div class="stat-item">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-text">Support</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">15k+</span>
+                        <span class="stat-text">Patients</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">98%</span>
+                        <span class="stat-text">Satisfaction</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image" data-aos="zoom-in" data-aos-delay="800">
+                <img src="../static/assets/Images/2.jpg" alt="Healthcare professional">
+                <div class="floating-card doctor">
+                    <div class="card-icon"><i class="fas fa-user-md"></i></div>
+                    <div class="card-text">
+                        <h4>Expert Doctors</h4>
+                        <p>Available 24/7</p>
+                    </div>
+                </div>
+                <div class="floating-card appointment">
+                    <div class="card-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div class="card-text">
+                        <h4>Easy Scheduling</h4>
+                        <p>Book in seconds</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" data-aos="fade-up">
+        <div class="container">
+            <div class="section-header" data-aos="fade-down">
+                <h2>Why Choose Our Platform</h2>
+                <p>Experience the future of healthcare delivery with these key benefits</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-icon green">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3>Virtual Consultations</h3>
+                    <p>Connect with doctors instantly through secure HD video calls from anywhere.</p>
+                </div>
+                
+                <div class="feature-card highlight" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-icon blue">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Easy Appointments</h3>
+                    <p>Schedule, reschedule, or cancel appointments with just a few clicks.</p>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="feature-icon purple">
+                        <i class="fas fa-prescription"></i>
+                    </div>
+                    <h3>E-Prescriptions</h3>
+                    <p>Receive digital prescriptions sent directly to your preferred pharmacy.</p>
+                </div>
+                
+                <div class="feature-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="feature-icon orange">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Health Tracking</h3>
+                    <p>Monitor vital signs and health metrics with intuitive dashboards.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" data-aos="fade-up">
+        <div class="container">
+            <div class="section-header" data-aos="fade-down">
+                <h2>What Our Patients Say</h2>
+                <p>Read about experiences from patients who've transformed their healthcare routine</p>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">The platform has completely changed how I manage my health. I can talk to my doctor whenever I need without leaving home.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Patient">
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <span>Patient • New York</span>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">As someone with chronic health issues, this platform has been a lifesaver. I get timely care without the hassle of travel.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Patient">
+                        <div class="author-info">
+                            <h4>Michael Chen</h4>
+                            <span>Patient • Boston</span>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="quote-icon"><i class="fas fa-quote-left"></i></div>
+                    <p class="testimonial-text">The medication reminder system ensures I never miss a dose. The entire experience is seamless and user-friendly.</p>
+                    <div class="testimonial-author">
+                        <img src="https://randomuser.me/api/portraits/women/68.jpg" alt="Patient">
+                        <div class="author-info">
+                            <h4>Emily Rodriguez</h4>
+                            <span>Patient • Chicago</span>
+                        </div>
+                    </div>
+                    <div class="rating">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star-half-alt"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==== heart && skeleton 3d assets ==== -->
+    <!-- Tabs -->
+<div class="tabs" data-aos="fade-up">
+  <button class="tab-button active" data-tab="heart">Heart</button>
+  <button class="tab-button" data-tab="skeleton">Skeleton</button>
+</div>
+
+<!-- Viewer Sections -->
+<div class="viewer-sections" data-aos="zoom-in-up" data-aos-delay="300">
+  <div data-content="heart" style="display: block;">
+    <model-viewer
+      src="/static/assets/3d/heart.glb"
+      alt="3D Heart Model"
+      auto-rotate
+      camera-controls
+      style="width: 100%; height: 400px;">
+    </model-viewer>
+  </div>
+  <div data-content="skeleton" style="display: none;">
+    <model-viewer
+      src="/static/assets/3d/skeleton.glb"
+      alt="3D Skeleton Model"
+      auto-rotate
+      camera-controls
+      style="width: 100%; height: 400px;">
+    </model-viewer>
+  </div>
+</div>
+
+
+
+    <!-- CTA Section -->
+    <section class="cta" data-aos="fade-up" data-aos-delay="200">
+        <div class="container">
+            <div class="cta-content" data-aos="zoom-in" data-aos-delay="400">
+                <h2>Ready to experience better healthcare?</h2>
+                <p>Join thousands of patients and healthcare providers on our platform.</p>
+                <a href="{{ url_for ('register') }}" class="btn btn-white btn-lg">Get Started Today</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-column brand">
+                    <div class="logo">
+                        <div class="logo-text">MediConnect</div>
+                    </div>
+                    <p>Revolutionizing healthcare through secure telehealth services, making quality care accessible to everyone.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{{ url_for ('index') }}">Home</a></li>
+                        <li><a href="{{ url_for ('about') }}">About Us</a></li>
+                        <li><a href="{{ url_for ('services') }}">Services</a></li>
+                        <li><a href="{{ url_for ('contact') }}">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="{{ url_for ('services') }}">Virtual Consultations</a></li>
+                        <li><a href="{{ url_for ('services') }}">Prescription Management</a></li>
+                        <li><a href="{{ url_for ('services') }}">Health Monitoring</a></li>
+                        <li><a href="{{ url_for ('services') }}">Medical Records</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Health Street, Medical City</li>
+                        <li><i class="fas fa-phone"></i> (800) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> support@mediconnect.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 MediConnect Telehealth Platform. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="{{ url_for ('privacy') }}">Privacy Policy</a>
+                    <a href="{{ url_for ('terms') }}">Terms of Service</a>
+                    <a href="{{ url_for ('faq') }}">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+<!-- Load your viewer script AFTER the above -->
+<script src="{{ url_for('static', filename='scripts/3d_viewer.js') }}"></script>
+
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+<!-- AOS JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,     // animation duration (ms)
+    once: true,         // animation happens only once
+    easing: 'ease-in-out', // smoother animation
+  });
+</script>
+</body>
+</html>

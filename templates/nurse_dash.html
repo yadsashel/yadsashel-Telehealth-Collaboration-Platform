@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nurse Dashboard - Welcome</title>
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="app-logo">MediCare</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="{{ url_for ('nurse_dash') }}"><span class="icon">🏠</span> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_patient') }}"><span class="icon">👥</span> Patients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_mess') }}"><span class="icon">✉️</span> Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_prf') }}"><span class="icon">⚙️</span> Profile</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">N</div>
+                <div class="user-info">
+                    <span class="user-role">Nurse Account</span>
+                    <span class="user-name">Michael Rodriguez</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h1>Nurse Dashboard</h1>
+                </div>
+                <div class="user-actions">
+                    <button class="notification-btn">🔔</button>
+                    <div class="avatar">N</div>
+                </div>
+            </header>
+
+
+            <!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">
+          <span>{{ message }}</span>
+          <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+            <div class="dashboard-content">
+                <!-- Two Column Layout for first row -->
+                <div class="two-column-grid">
+                    <!-- Scheduling Panel -->
+                    <section class="dashboard-card scheduling-panel">
+                        <h2>Today's Schedule</h2>
+                        <div class="time-slots">
+                            <div class="time-slot current">
+                                <div class="time">9:00 AM</div>
+                                <div class="slot-content">
+                                    <div class="slot-details">
+                                        <h4>Patient Check-in</h4>
+                                        <p>Emma Wilson - Room 103</p>
+                                    </div>
+                                    <span class="slot-type check-in">Check-in</span>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="time">10:30 AM</div>
+                                <div class="slot-content">
+                                    <div class="slot-details">
+                                        <h4>Medication Administration</h4>
+                                        <p>John Smith - Room 210</p>
+                                    </div>
+                                    <span class="slot-type medication">Medication</span>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="time">11:45 AM</div>
+                                <div class="slot-content">
+                                    <div class="slot-details">
+                                        <h4>Vital Signs Check</h4>
+                                        <p>Lisa Johnson - Room 105</p>
+                                    </div>
+                                    <span class="slot-type vitals">Vitals</span>
+                                </div>
+                            </div>
+                            <div class="time-slot">
+                                <div class="time">1:15 PM</div>
+                                <div class="slot-content">
+                                    <div class="slot-details">
+                                        <h4>Wound Dressing</h4>
+                                        <p>Michael Brown - Room 107</p>
+                                    </div>
+                                    <span class="slot-type procedure">Procedure</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Tasks List -->
+                    <section class="dashboard-card tasks-list">
+                        <h2>Tasks</h2>
+                        <div class="task-filters">
+                            <button class="task-filter active">All</button>
+                            <button class="task-filter">Pending</button>
+                            <button class="task-filter">Completed</button>
+                        </div>
+                        <ul class="tasks">
+                            <li class="task-item completed">
+                                <label class="task-checkbox">
+                                    <input type="checkbox" checked>
+                                    <span class="checkmark"></span>
+                                </label>
+                                <div class="task-content">
+                                    <h4>Record vital signs for Room 105</h4>
+                                    <p>Due 9:30 AM</p>
+                                </div>
+                            </li>
+                            <li class="task-item">
+                                <label class="task-checkbox">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <div class="task-content">
+                                    <h4>Administer medication to Room 210</h4>
+                                    <p>Due 10:30 AM</p>
+                                </div>
+                            </li>
+                            <li class="task-item">
+                                <label class="task-checkbox">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <div class="task-content">
+                                    <h4>Update patient charts</h4>
+                                    <p>Due 12:00 PM</p>
+                                </div>
+                            </li>
+                            <li class="task-item">
+                                <label class="task-checkbox">
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <div class="task-content">
+                                    <h4>Prepare room for new admission</h4>
+                                    <p>Due 2:00 PM</p>
+                                </div>
+                            </li>
+                        </ul>
+                        <button class="add-task-btn">+ Add Task</button>
+                    </section>
+                </div>
+
+                <!-- Patient Vitals -->
+                <section class="dashboard-card patient-vitals">
+                    <h2>Patient Vitals</h2>
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search patients...">
+                        <button class="search-btn">🔍</button>
+                    </div>
+                    <div class="vitals-table-container">
+                        <table class="vitals-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Room</th>
+                                    <th>Temperature</th>
+                                    <th>Heart Rate</th>
+                                    <th>Blood Pressure</th>
+                                    <th>Oxygen</th>
+                                    <th>Last Updated</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="patient-cell">
+                                            <div class="avatar small">E</div>
+                                            <span>Emma Wilson</span>
+                                        </div>
+                                    </td>
+                                    <td>103</td>
+                                    <td>98.6°F</td>
+                                    <td>72 bpm</td>
+                                    <td>120/80</td>
+                                    <td>98%</td>
+                                    <td>9:15 AM</td>
+                                    <td>
+                                        <button class="action-btn">Update</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="patient-cell">
+                                            <div class="avatar small">J</div>
+                                            <span>John Smith</span>
+                                        </div>
+                                    </td>
+                                    <td>210</td>
+                                    <td>99.1°F</td>
+                                    <td>78 bpm</td>
+                                    <td>130/85</td>
+                                    <td>96%</td>
+                                    <td>8:45 AM</td>
+                                    <td>
+                                        <button class="action-btn">Update</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="patient-cell">
+                                            <div class="avatar small">L</div>
+                                            <span>Lisa Johnson</span>
+                                        </div>
+                                    </td>
+                                    <td>105</td>
+                                    <td>98.4°F</td>
+                                    <td>68 bpm</td>
+                                    <td>118/75</td>
+                                    <td>99%</td>
+                                    <td>9:30 AM</td>
+                                    <td>
+                                        <button class="action-btn">Update</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="patient-cell">
+                                            <div class="avatar small">M</div>
+                                            <span>Michael Brown</span>
+                                        </div>
+                                    </td>
+                                    <td>107</td>
+                                    <td>100.2°F</td>
+                                    <td>85 bpm</td>
+                                    <td>135/90</td>
+                                    <td>94%</td>
+                                    <td>8:30 AM</td>
+                                    <td>
+                                        <button class="action-btn urgent">Update</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+</body>
+</html>

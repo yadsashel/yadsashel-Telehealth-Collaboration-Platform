@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+</head>
+<body>
+   
+      <div class="dashboard-container">
+         <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="{{ url_for ('patient_dash') }}"><span class="icon">🏠</span> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('patient_appoin') }}"><span class="icon">📅</span> Appointments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('patient_mess') }}"><span class="icon">✉️</span> Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('patient_prf') }}"><span class="icon">👤</span> Profile</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+            <div class="">
+              {% if user.image_url %}
+                <img src="{{ url_for('static', filename=user.image_url) }}" alt="Profile Picture" class="img-thumbnail mb-2" style="max-width: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff;">
+              {% else %}
+                <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" class="img-thumbnail mb-2" style="max-width: 45%;">
+              {% endif %}
+            </div>
+                <div class="user-info">
+                    <span class="user-role">Your Account</span>
+                    <span class="user-name"> {{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h1>Patient Dashboard</h1>
+                </div>
+                <div class="header-container">
+                <!-- Profile Picture -->
+                <div class="profile-pic-container">
+                  {% if user and user.image_url %}
+                   <img src="{{ url_for('static', filename=user.image_url) }}" alt="Profile Picture" class="profile-pic">
+                  {% else %}
+                    <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" class="profile-pic">
+                  {% endif %}
+                </div>
+              </div>
+            </header>
+
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+          <div class="alert {{ category }}">
+            <span>{{ message }}</span>
+            <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <!-- ====== patient appointements ===== -->
+        <div class="appointment-card">
+        <div class="appointment-header">
+            <h3>Appointments</h3>
+            <p>View or book your appointments</p>
+        </div>
+
+        <div class="appointment-tabs">
+            <div class="tab-buttons">
+                <button class="tab active" onclick="showTab(event, 'upcoming')">Upcoming</button>
+                <button class="tab" onclick="showTab(event, 'past')">Past</button>
+            </div>   
+
+          
+        <div id="upcoming" class="tab-content active">
+        {% if upcoming_appointments %}
+        {% for appointment in upcoming_appointments %}
+          <div class="appointment-entry">
+            <div class="doctor-info">
+              <div class="doctor-header">
+                <h4>{{ appointment.appointment_type }}</h4>
+                <span class="status confirmed">confirmed</span>
+              </div>
+              <p class="specialty">{{ appointment.reason }}</p>
+              <div class="appointment-meta">
+                <div class="meta-item"><span class="icon">📅</span> <span>{{ appointment.date }}</span></div>
+                <div class="meta-item"><span class="icon">⏰</span> <span>{{ appointment.time }}</span></div>
+              </div>
+            </div>
+            <div class="appointment-actions">
+              <form action="{{ url_for('join_meeting', appointment_id=appointment.id) }}"  method="POST">
+                   <button type="submit" class="btn primary">Join Video Call</button>
+              </form>
+              <button class="btn cancel" data-id="{{ appointment.id }}" onclick="cancelAppointment(this)">Cancel</button>
+            </div>
+          </div>
+         {% endfor %}
+         {% else %}
+           <p>No upcoming appointments scheduled.</p>
+         {% endif %}
+        </div>
+
+      <div id="past" class="tab-content">
+      <!-- past appointment -->
+      {% if past_appointments %}
+        {% for appointment in past_appointments %}
+          <div class="appointment-entry">
+            <div class="doctor-info">
+              <div class="doctor-header">
+                <h4>{{ appointment.appointment_type }}</h4>
+                <span class="status confirmed">confirmed</span>
+              </div>
+              <p class="specialty">{{ appointment.reason }}</p>
+              <div class="appointment-meta">
+                <div class="meta-item"><span class="icon">📅</span> <span>{{ appointment.date }}</span></div>
+                <div class="meta-item"><span class="icon">⏰</span> <span>{{ appointment.time }}</span></div>
+              </div>
+          {% endfor %}
+          {% else %}
+            <p>No past appointments scheduled.</p>
+          {% endif %}
+            </div>
+          </div>  
+      </div>
+
+
+
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+</body>
+</html>

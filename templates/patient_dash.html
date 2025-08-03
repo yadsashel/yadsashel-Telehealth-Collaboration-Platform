@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Welcome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+</head>
+<body>
+   
+<div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="#"><span class="icon">🏠</span> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('patient_appoin') }}"><span class="icon">📅</span>Appointments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('patient_mess') }}"><span class="icon">✉️</span> Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('diagnosis_page') }}"><span class="icon"><svg xmlns="http://www.w3.org/2000/svg" 
+    fill="none" viewBox="0 0 24 24" stroke="currentColor" 
+     stroke-width="1.5" width="20" height="20" class="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" 
+        d="M9 12h6m-3-3v6m9-6a9 9 0 11-18 0 9 9 0 0118 0z" />
+</svg>
+</span> Diagnosis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('patient_prf') }}"><span class="icon">👤</span> Profile</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                 <div class="user-profile">
+            <div class="">
+              {% if user.image_url %}
+                <img src="{{ url_for('static', filename=user.image_url) }}" alt="Profile Picture" class="img-thumbnail mb-2" style="max-width: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff;">
+              {% else %}
+                <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" class="img-thumbnail mb-2" style="max-width: 45%;">
+              {% endif %}
+            </div>
+                <div class="user-info">
+                    <span class="user-role">Patient Account</span>
+                    <span class="user-name">Emma Wilson</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h1>Patient Dashboard</h1>
+                </div>
+                <div class="header-container">
+
+       <!-- Profile Picture -->
+        <div class="profile-pic-container">
+          {% if user and user.image_url %}
+          <img src="{{ url_for('static', filename=user.image_url) }}" alt="Profile Picture" class="profile-pic">
+          {% else %}
+          <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" class="profile-pic">
+          {% endif %}
+        </div>
+    </div>
+    </header>
+
+
+            <!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">
+          <span>{{ message }}</span>
+          <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+            <!-- main patient content - dashboard -->
+            <div class="dashboard-content">
+                <!-- Two Column Layout -->
+                <div class="two-column-grid">
+                    <!-- Appointment Booking -->
+                    <section class="dashboard-card appointment-booking">
+                        <h2>Schedule an Appointment</h2>
+                        
+                        <div class="appointment-types">
+                            <div class="appointment-type" onclick="toggleModal()">
+                                <div class="appointment-icon">👨‍⚕️</div>
+                                <div class="appointment-text">
+                                    <h3>Doctor Visit</h3>
+                                    <p>Schedule a checkup or consultation</p>
+                                </div>
+                            </div>
+                            <div class="appointment-type" onclick="toggleModal()">
+                                <div class="appointment-icon">💊</div>
+                                <div class="appointment-text">
+                                    <h3>Prescription Refill</h3>
+                                    <p>Request medication refills</p>
+                                </div>
+                            </div>
+                            <div class="appointment-type" onclick="toggleModal()">
+                                <div class="appointment-icon">🔬</div>
+                                <div class="appointment-text">
+                                    <h3>Lab Tests</h3>
+                                    <p>Schedule blood work and other tests</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Appointment Booking Modal -->
+                    <div id="appointmentModal" class="modal">
+                        <div class="modal-content">
+                                <button class="close-btn" onclick="toggleModal(false)">×</button>
+                                <h2>Book an Appointment</h2>
+                                <p>Select your preferred doctor, date, and time.</p>
+
+                            <form action="/schedule_app" method="post">
+                                <label for="appointmentType" name="appointmentType" >Appointment Type</label>
+                                <select id="appointmentType"  name="appointmentType" required>
+                                   <option value="">Select appointment type</option>
+                                   <option value="Doctor_Visit">Doctor Visit</option>
+                                   <option value="Prescription_Refill">Prescription Refill</option>
+                                   <option value="Lab_Tests">Lab Tests</option>
+                                </select>
+
+                                <label for="date">Preferred Date</label>
+                                <input type="date" name="date" id="date" required>
+
+                                <label for="time">Preferred Time</label>
+                                <input type="time" name="time" id="time" required>
+
+                                <label for="reason">Reason</label>
+                                <textarea id="reason" name="reason" placeholder="Brief description..." required></textarea>
+
+                                <button type="submit" class="submit-btn">Book Appointment</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Health Summary -->
+                    <section class="dashboard-card health-summary">
+                        <h2>Health Summary</h2>
+                        
+                        <div class="vital-signs">
+                            <div class="vital-sign">
+                                <div class="vital-icon heart-rate">❤️</div>
+                                <div class="vital-details">
+                                    <h3>Heart Rate</h3>
+                                    <p class="vital-value">72 bpm</p>
+                                    <p class="vital-range">Normal range: 60-100 bpm</p>
+                                </div>
+                            </div>
+                            <div class="vital-sign">
+                                <div class="vital-icon blood-pressure">🩸</div>
+                                <div class="vital-details">
+                                    <h3>Blood Pressure</h3>
+                                    <p class="vital-value">120/80</p>
+                                    <p class="vital-range">Normal range: 90-120/60-80</p>
+                                </div>
+                            </div>
+                            <div class="vital-sign">
+                                <div class="vital-icon weight">⚖️</div>
+                                <div class="vital-details">
+                                    <h3>Weight</h3>
+                                    <p class="vital-value">140 lbs</p>
+                                    <p class="vital-trend positive">↓ 2 lbs from last visit</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="medications">
+                            <h3>Current Medications</h3>
+                            <ul class="medication-list">
+                                <li class="medication-item">
+                                    <div class="medication-name">Lisinopril 10mg</div>
+                                    <div class="medication-schedule">Once daily</div>
+                                </li>
+                                <li class="medication-item">
+                                    <div class="medication-name">Metformin 500mg</div>
+                                    <div class="medication-schedule">Twice daily</div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button class="view-all-btn">View Complete Health Record</button>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+
+        <!-- ===== AI Assistant Section ===== -->
+<section class="ai-chat-section" style="padding: 2rem; max-width: 600px; margin: 40px auto;">
+  <h2 style="font-size: 1.5rem; margin-bottom: 1rem;">Ask Your AI Assistant</h2>
+  <textarea id="userPrompt" placeholder="Enter your question here..." style="width: 100%; height: 100px; padding: 1rem; margin-bottom: 1rem;"></textarea>
+  <button id="askBtn" style="padding: 0.5rem 1rem; background-color: #3498db; color: white; border: none; cursor: pointer;">Ask</button>
+  <div id="aiResponse" class="ai-response" style="white-space: pre-line; margin-top: 1rem; background: #f9f9f9; padding: 1rem; border-radius: 8px;"></div>
+</section>
+
+    </div>
+
+
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+</body>
+</html>

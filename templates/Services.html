@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services - Telehealth Collaboration Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+    <!-- AOS CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+</head>
+<body>
+
+    
+   <!-- Navigation Bar -->
+    <header>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">
+        <img class="logo_roni" src="../static/assets/Icons/mainIcon.png" alt="">
+      </div>
+    </div>
+
+    <nav>
+      <div class="menu-toggle" id="mobile-menu">
+        &#9776; <!-- hamburger icon (simple text) -->
+      </div>
+      <ul class="nav-menu">
+        <li><a href="{{ url_for('index') }}" class="active">Home</a></li>
+        <li><a href="{{ url_for('about') }}">About</a></li>
+        <li><a href="{{ url_for('services') }}">Services</a></li>
+        <li><a href="{{ url_for('contact') }}">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-buttons">
+      <a href="{{ url_for('login') }}" class="btn btn-outline">Log In</a>
+      <a href="{{ url_for('register') }}" class="btn btn-primary">Sign Up</a>
+    </div>
+  </div>
+</header>
+
+    <!-- Hero Section -->
+    <section class="hero" data-aos="fade-up">
+        <div class="container">
+            <div class="hero-content"  data-aos="fade-right">
+                <div class="breadcrumb">
+                    <a href="{{ url_for ('index') }}">Home</a> <i class="fas fa-chevron-right"></i> <span>Services</span>
+                </div>
+                <h1>Comprehensive <span>Healthcare</span> Solutions</h1>
+                <p>Discover our full range of healthcare services designed to make quality care more accessible, convenient, and personalized for you.</p>
+            </div>
+            <div class="hero-stats" data-aos="zoom-in" data-aos-delay="200">
+                <div class="stat-box" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="stat-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="stat-number" id="doctorsCounter">0</div>
+                    <div class="stat-text">Medical experts</div>
+                </div>
+                <div class="stat-box" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-number" id="patientsCounter">0</div>
+                    <div class="stat-text">Beneficiary patients</div>
+                </div>
+                <div class="stat-box" data-aos="zoom-in" data-aos-delay="500">
+                    <div class="stat-icon">
+                        <i class="fas fa-thumbs-up"></i>
+                    </div>
+                    <div class="stat-number" id="satisfactionCounter">0</div>
+                    <div class="stat-text">% Satisfaction rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" data-aos="fade-up">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Our Healthcare Services</h2>
+                <p>A comprehensive suite of telehealth solutions designed for modern healthcare needs</p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="service-icon blue">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <h3>Virtual Consultations</h3>
+                    <p>Connect with certified healthcare providers through secure HD video calls from any location. Get expert medical advice without leaving home.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> 24/7 availability</li>
+                        <li><i class="fas fa-check"></i> Board-certified specialists</li>
+                        <li><i class="fas fa-check"></i> Encrypted sessions</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline">Learn More</a>
+                </div>
+                
+                <div class="service-card highlight" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-icon green">
+                        <i class="fas fa-prescription"></i>
+                    </div>
+                    <h3>E-Prescriptions</h3>
+                    <p>Receive digital prescriptions sent directly to your preferred pharmacy for quick and easy medication access following your consultation.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Paperless convenience</li>
+                        <li><i class="fas fa-check"></i> Integrates with pharmacies</li>
+                        <li><i class="fas fa-check"></i> Medication tracking</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+                
+                <div class="service-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="service-icon purple">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h3>Easy Appointment Booking</h3>
+                    <p>Schedule and manage your medical appointments hassle-free with our intuitive booking system that sends helpful reminders.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Instant confirmations</li>
+                        <li><i class="fas fa-check"></i> Smart reminders</li>
+                        <li><i class="fas fa-check"></i> Simple rescheduling</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline">Learn More</a>
+                </div>
+                
+                <div class="service-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="service-icon orange">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Health Tracking</h3>
+                    <p>Monitor vital signs and health metrics with our intuitive dashboards and receive AI-powered insights and recommendations.</p>
+                    <ul class="service-features">
+                        <li><i class="fas fa-check"></i> Vital sign monitoring</li>
+                        <li><i class="fas fa-check"></i> Progress visualization</li>
+                        <li><i class="fas fa-check"></i> Custom health goals</li>
+                    </ul>
+                    <a href="{{ url_for ('services') }}" class="btn btn-outline">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Advanced Features Section -->
+    <section class="advanced-features" data-aos="fade-up">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>Powered by Innovation</h2>
+                <p>Cutting-edge technology for a smarter healthcare experience</p>
+            </div>
+            
+            <div class="features-container">
+                <div class="features-image" data-aos="fade-right" data-aos-delay="100">
+                    <img class="ser_img" src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?q=80&w=2070&auto=format&fit=crop" alt="Advanced healthcare technology">
+                </div>
+                
+                <div class="features-content">
+                    <div class="feature-item" data-aos="fade-left" data-aos-delay="200">
+                        <div class="feature-icon">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="feature-info">
+                            <h3>AI-Powered Patient Insights</h3>
+                            <p>Our proprietary algorithms analyze health data in real-time to predict and prevent issues before they arise, ensuring smarter and more proactive care.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item" data-aos="fade-left" data-aos-delay="300">
+                        <div class="feature-icon">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="feature-info">
+                            <h3>Collaborative Virtual Rooms</h3>
+                            <p>Doctors, nurses, and patients can connect in a shared digital space, creating a virtual hospital room where all relevant parties stay informed and connected.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item" data-aos="fade-left" data-aos-delay="400">
+                        <div class="feature-icon">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <div class="feature-info">
+                            <h3>Intelligent Medication System</h3>
+                            <p>Our smart reminder system adjusts to your routine and habits, analyzing health data to ensure you take the right medication at the optimal time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Service Process Section -->
+    <section class="service-process" data-aos="fade-up">
+        <div class="container">
+            <div class="section-header" data-aos="fade-up">
+                <h2>How Our Services Work</h2>
+                <p>A simple, streamlined process designed with your convenience in mind</p>
+            </div>
+            
+            <div class="process-steps">
+                <div class="step" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3>Create Account</h3>
+                    <p>Sign up in minutes with your basic information and health history</p>
+                </div>
+                <div class="step-connector"></div>
+                
+                <div class="step" data-aos="zoom-in" data-aos-delay="200">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h3>Book Appointment</h3>
+                    <p>Choose your doctor, date, and time that works best for you</p>
+                </div>
+                <div class="step-connector"></div>
+                
+                <div class="step" data-aos="zoom-in" data-aos-delay="300">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Consultation</h3>
+                    <p>Meet with your provider through our secure video platform</p>
+                </div>
+                <div class="step-connector"></div>
+                
+                <div class="step" data-aos="zoom-in" data-aos-delay="400">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <h3>Treatment Plan</h3>
+                    <p>Receive personalized care plans and prescriptions if needed</p>
+                </div>
+                <div class="step-connector"></div>
+                
+                <div class="step" data-aos="zoom-in" data-aos-delay="500">
+                    <div class="step-number">5</div>
+                    <div class="step-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Follow-up</h3>
+                    <p>Track progress and schedule follow-up appointments as needed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing">
+        <div class="container">
+            <div class="section-header">
+                <h2>Transparent Pricing</h2>
+                <p>Affordable healthcare options to meet your needs</p>
+            </div>
+            
+            <div class="pricing-plans">
+                <div class="pricing-card" data-aos="flip-left" data-aos-delay="100">
+                    <div class="plan-name">Basic</div>
+                    <div class="plan-price">$0<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> 5 Virtual consultations</li>
+                        <li><i class="fas fa-check"></i> E-prescription services</li>
+                        <li><i class="fas fa-check"></i> Basic health tracking</li>
+                        <li><i class="fas fa-times"></i> Specialist consultations</li>
+                        <li><i class="fas fa-times"></i> Family accounts</li>
+                    </ul>
+                    <a href="{{ url_for ('register') }}" class="btn btn-outline btn-block">Get Started</a>
+                </div>
+                
+                <div class="pricing-card popular" data-aos="flip-left" data-aos-delay="300">
+                    <div class="popular-tag">Most Popular</div>
+                    <div class="plan-name">Standard</div>
+                    <div class="plan-price">$29<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Unlimited consultations</li>
+                        <li><i class="fas fa-check"></i> E-prescription services</li>
+                        <li><i class="fas fa-check"></i> Advanced health tracking</li>
+                        <li><i class="fas fa-check"></i> 2 Specialist consultations</li>
+                        <li><i class="fas fa-times"></i> Family accounts</li>
+                    </ul>
+                    <a href="{{ url_for ('register') }}" class="btn btn-primary btn-block">Get Started</a>
+                </div>
+                
+                <div class="pricing-card" data-aos="flip-left" data-aos-delay="200">
+                    <div class="plan-name">Premium</div>
+                    <div class="plan-price">$49<span>/month</span></div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Unlimited consultations</li>
+                        <li><i class="fas fa-check"></i> E-prescription services</li>
+                        <li><i class="fas fa-check"></i> Advanced health tracking</li>
+                        <li><i class="fas fa-check"></i> Unlimited specialist access</li>
+                        <li><i class="fas fa-check"></i> Up to 5 family accounts</li>
+                    </ul>
+                    <a href="{{ url_for ('register') }}" class="btn btn-outline btn-block">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Start your healthcare journey today</h2>
+                <p>Join thousands of users who've already transformed their healthcare experience.</p>
+                <a href="{{ url_for ('register') }}" class="btn btn-white btn-lg">Sign Up Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-column brand">
+                    <div class="logo">
+                    </div>
+                    <p>Revolutionizing healthcare through secure telehealth services, making quality care accessible to everyone.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="{{ url_for ('index') }}">Home</a></li>
+                        <li><a href="{{ url_for ('about') }}">About Us</a></li>
+                        <li><a href="{{ url_for ('services') }}">Services</a></li>
+                        <li><a href="{{ url_for ('contact') }}">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="{{ url_for ('services') }}">Virtual Consultations</a></li>
+                        <li><a href="{{ url_for ('services') }}">Prescription Management</a></li>
+                        <li><a href="{{ url_for ('services') }}">Health Monitoring</a></li>
+                        <li><a href="{{ url_for ('services') }}">Medical Records</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h3>Contact Us</h3>
+                    <ul class="contact-info">
+                        <li><i class="fas fa-map-marker-alt"></i> 123 Health Street, Medical City</li>
+                        <li><i class="fas fa-phone"></i> (800) 123-4567</li>
+                        <li><i class="fas fa-envelope"></i> support@telehealthcollaboration.com</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 Telehealth Collaboration Platform. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="{{ url_for ('privacy') }}">Privacy Policy</a>
+                    <a href="{{ url_for ('terms') }}">Terms of Service</a>
+                    <a href="{{ url_for ('faq') }}">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+
+<!-- AOS animation js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+  AOS.init({
+    duration: 1000,     // animation duration (ms)
+    once: true,         // animation happens only once
+    easing: 'ease-in-out', // smoother animation
+  });
+</script>
+</body>
+</html>

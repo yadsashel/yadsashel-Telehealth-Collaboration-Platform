@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="{{ url_for ('nurse_dash') }}"><span class="icon">🏠</span> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_patient') }}"><span class="icon">👥</span> Patients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_mess') }}"><span class="icon">✉️</span> Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_prf') }}"><span class="icon">⚙️</span> profile</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+            <div class="">
+              {% if user.image_url %}
+                <img src="{{ url_for('static', filename=user.image_url) }}" alt="Profile Picture" class="img-thumbnail mb-2" style="max-width: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff;">
+              {% else %}
+                <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" class="img-thumbnail mb-2" style="max-width: 45%;">
+              {% endif %}
+            </div>
+                <div class="user-info">
+                    <span class="user-role">Your Account</span>
+                    <span class="user-name"> {{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h1>Nurse Dashboard</h1>
+                </div>
+                </div>
+            </header>
+
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              <div class="flash-messages">
+                  {% for category, message in messages %}
+              <div class="alert {{ category }}">
+                  <span>{{ message }}</span>
+                  <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+              </div>
+                  {% endfor %}
+              </div>
+            {% endif %}
+            {% endwith %}
+
+        <!-- ======= Personal Information ======== -->
+        <div class="personal-info-section">
+            <h2>Personal Information</h2>
+            <p>Manage your personal details and contact information.</p>
+          <form class="form_btn" action="/nur_prf" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label for="first_name" class="form-label">First Name</label>
+              <input type="text" class="form-control" id="first_name" name="first_name" required value="{{ user.first_name }}">
+            </div>
+
+            <div class="mb-3">
+              <label for="last_name" class="form-label">Last Name</label>
+              <input type="text" class="form-control" id="last_name" name="last_name" required value="{{ user.last_name }}">
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address</label>
+              <input type="email" class="form-control" id="email" name="email" required value="{{ user.email }}">
+            </div>
+
+            <div class="mb-3">
+              <label for="tel" class="form-label">Telephone</label>
+              <input type="tel" class="form-control" id="tel" name="tel" required value="{{ user.tel }}">
+            </div>
+
+            <div class="mb-3">
+              <label for="sc_code" class="form-label">Secret Code</label>
+              <input type="text" class="form-control" id="sc_code" name="sc_code" required value="{{ user.sc_code }}">
+            </div>
+
+            <h5 class="pass_change">Change Password (optional)</h5>
+            <div class="mb-3">
+              <label for="password" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
+            </div>
+
+            <div class="mb-3">
+              <label for="confirm_password" class="form-label">Confirm New Password</label>
+              <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Leave blank to keep current password">
+            </div>
+
+            <div class="mb-3">
+              <label for="image" class="form-label">Profile Picture</label><br>
+            {% if user and user.image_url %}
+              <img src="{{ url_for('static', filename=user.image_url) }}" alt="Profile Picture" class="img-thumbnail mb-2" style="max-width: 60px; border-radius: 10%;">
+            {% endif %}
+              <input class="form-control" type="file" id="image" name="image" accept="image/*">
+        </div>
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+          </form>
+      </div>
+  </div>
+  </div>
+
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+</body>
+</html>

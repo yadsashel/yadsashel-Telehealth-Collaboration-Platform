@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments</title>
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+</head>
+<body>
+    
+    <div class="dashboard-container" id="dashboard-doctor">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="{{ url_for ('doctor_dash') }}"><span class="icon">🏠</span> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('doc_appoin') }}"><span class="icon">📅</span> Appointments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('doc_mess') }}"><span class="icon">✉️</span> Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('doc_prf') }}"><span class="icon">⚙️</span> Profile</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">D</div>
+                <div class="user-info">
+                    <span class="user-role">Doctor Account</span>
+                    <span class="user-name">Dr. Sarah Johnson</span>
+                </div>
+            </div>
+        </aside>
+
+        
+
+        <!-- Appointments - Section -->
+<section class="appointments-section" id="appointements">
+  <div class="appointments-header">
+    <h2>Today's Appointments</h2>
+    <button class="calendar-btn"><i class="icon-calendar"></i>View Calendar</button>
+  </div>
+
+  <header class="top-bar">
+              <div class="page-title">
+                   <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                   <h1>Doctor Dashboard</h1>
+              </div>
+  </header>
+
+  <!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">
+          <span>{{ message }}</span>
+          <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+  <!-- ===== Appointments Section ===== -->
+<section class="appointments-section">
+  {% for appointment in appointments %}
+  <div class="appointment-card">
+    <!-- Profile Picture -->
+    <div class="profile-pic-container">
+      {% if appointment.patient and appointment.patient.image_url %}
+        <img src="{{ url_for('static', filename=appointment.patient.image_url) }}" alt="Profile Picture" class="profile-pic">
+      {% else %}
+        <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" class="profile-pic">
+      {% endif %}
+    </div>
+
+    <div class="appointment-info">
+      <div class="appointment-name-time">
+        <strong>{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</strong>
+        <span class="time">{{ appointment.date }} {{ appointment.time.strftime('%H:%M') }}</span>
+        <span class="status confirmed">Confirmed</span>
+      </div>
+      <p>{{ appointment.reason }}</p>
+    </div>
+
+    <div class="appointment-actions">
+      <form action="{{ url_for('join_meeting', appointment_id=appointment.id) }}" method="POST">
+        <button class="btn primary">📹 Start Call</button>
+      </form>
+      <a href="{{ url_for('doc_mess') }}" class="btn">💬 Message</a>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+</div>
+        
+                    
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+</body>
+</html>

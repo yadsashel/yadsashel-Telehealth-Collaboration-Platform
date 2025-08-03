@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+</head>
+<body data-current-user-id="{{ current_user_id }}" data-receiver-id="{{ contact.id }}">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="{{ url_for ('nurse_dash') }}"><span class="icon">🏠</span> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_patient') }}"><span class="icon">👥</span> Patients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_mess') }}"><span class="icon">✉️</span> Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('nur_prf') }}"><span class="icon">⚙️</span> Profile</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+                <div class="avatar">N</div>
+                <div class="user-info">
+                    <span class="user-role">Nurse Account</span>
+                    <span class="user-name">Michael Rodriguez</span>
+                </div>
+            </div>
+        </aside>
+    
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h1>Nurse Dashboard</h1>
+                </div>
+            </header>
+
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-messages">
+            {% for category, message in messages %}
+                <div class="alert {{ category }}">
+                   <span>{{ message }}</span>
+                   <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+
+            <!-- Hidden fields to pass data to JS -->
+<input type="hidden" id="current-user-id" value="{{ current_user_id }}">
+<input type="hidden" id="contact-id" value="{{ contact.id }}">
+<input type="hidden" id="contact-name" value="{{ contact.first_name }}">
+
+
+              <!-- ====== messages section ====== -->
+  <!-- messages layout -->
+ <div class="msg-container">
+    <div class="msg-card">
+      <div class="msg-header">
+        <h3 class="msg-title">Messaging with {{ contact.first_name }} {{ contact.last_name }}</h3>
+        <a href="{{ url_for('nur_prf', user_id=contact.id) }}" class="msg-btn">View Profile</a>
+      </div>
+      <div id="messages" class="msg-chat-content">
+        {% for msg in messages %}
+          <div class="msg-bubble {% if msg.sender_id == current_user_id %}right{% else %}left{% endif %}">
+            <p>{{ msg.content }}</p>
+            <span class="msg-time">{{ msg.timestamp.strftime('%H:%M') }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      <div id="typingIndicator" style="display:none; font-style: italic; color: grey; padding: 5px;">
+      <form id="message-form" class="msg-chat-input">
+        <input type="text" id="message-input" placeholder="Write a message..." autocomplete="off" />
+        <button type="submit" class="msg-btn">📤 Send</button>
+      </form>
+    </div>
+  </div>
+
+
+</div>
+
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+</body>
+</html>

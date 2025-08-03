@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messagse</title>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for ('static', filename='css/styles.css') }}">
+</head>
+<body data-current-user-id="{{ current_user_id }}" data-receiver-id="{{ contact.id }}">
+   
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="nav-item active">
+                        <a href="{{ url_for ('doctor_dash') }}"><span class="icon">🏠</span> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('doc_appoin') }}"><span class="icon">📅</span> Appointments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('doc_mess') }}"><span class="icon">✉️</span> Messages</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url_for ('doc_prf') }}"><span class="icon">⚙️</span> Profile</a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="user-profile">
+            <div class="">
+              {% if user.image_url %}
+                <img src="{{ url_for('static', filename=user.image_url) }}" alt="Profile Picture" class="img-thumbnail mb-2" style="max-width: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff;">
+              {% else %}
+                <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" class="img-thumbnail mb-2" style="max-width: 45%;">
+              {% endif %}
+            </div>
+                <div class="user-info">
+                    <span class="user-role">Your Account</span>
+                    <span class="user-name"> {{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="page-title">
+                    <button class="sidebar-toggle" id="sidebarToggle">☰</button>
+                    <h1>Patient Dashboard</h1>
+                </div>
+                <div class="header-container">
+              <!-- Profile Picture -->
+              <div class="profile-pic-container">
+                {% if user and user.image_url %}
+                   <img src="{{ url_for('static', filename=user.image_url) }}" alt="Profile Picture" class="profile-pic">
+                {% else %}
+                    <img src="{{ url_for('static', filename='default_profile.png') }}" alt="Default Profile Picture" class="profile-pic">
+                {% endif %}
+                </div>
+              </div>
+            </header>
+
+
+            <!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-messages">
+      {% for category, message in messages %}
+        <div class="alert {{ category }}">
+          <span>{{ message }}</span>
+          <button class="close-btn" onclick="this.parentElement.style.display='none';">&times;</button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+
+   <!-- Hidden fields to pass data to JS -->
+<input type="hidden" id="current-user-id" value="{{ current_user_id }}">
+<input type="hidden" id="contact-id" value="{{ contact.id }}">
+<input type="hidden" id="contact-name" value="{{ contact.first_name }}">
+
+  <!-- ====== messages section ====== -->
+  <!-- messages layout -->
+<section class="msg-container">
+  <input type="hidden" id="currentUserId" value="{{ current_user_id }}">
+  <input type="hidden" id="contactId" value="{{ contact_id }}">
+
+  <div class="msg-card">
+    <div class="msg-header">
+      <h3 class="msg-title">Your Messages</h3>
+    </div>
+
+    <div class="msg-body">
+      <!-- Sidebar: contacts -->
+      <div class="msg-sidebar">
+        {% for contact in contacts %}
+        <div class="msg-user {% if contact.id == contact_id %}active{% endif %}">
+          <a href="{{ url_for('patient_mess', contact_id=contact.id) }}">
+            <div class="msg-avatar">{{ contact.first_name[0] }} </div>
+            <div class="msg-info">
+              <h4>{{ contact.first_name }} {{ contact.last_name }}</h4>
+              <p>{{ contact.email }}</p>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Chat Area -->
+      <div class="msg-chat">
+        {% if contact %}
+        <div class="msg-chat-header">
+          <div class="msg-chat-user">
+            <div class="msg-avatar small">{{ contact.first_name[0] }}</div>
+            <div>
+              <h4>{{ contact.first_name }} {{ contact.last_name }}</h4>
+              <span class="msg-status online">● online</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="messagesContainer" class="msg-chat-content">
+          {% for msg in messages %}
+          <div class="msg-bubble {% if msg.sender_id == current_user_id %}right{% else %}left{% endif %}">
+            <p>{{ msg.content }}</p>
+            <span class="msg-time">{{ msg.timestamp.strftime('%H:%M') }}</span>
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Typing Indicator -->
+        <div id="typingIndicator" class="typing-status" style="display:none">
+          💬 {{ contact.first_name }} is typing...
+        </div>
+
+        <!-- Input Area -->
+        <div class="msg-chat-input">
+          <input type="text" id="messageInput" class="msg-input" placeholder="Type your message..." autocomplete="off" required />
+          <button class="msg-btn msg-send-btn" id="sendButton">📤 Send</button>
+        </div>
+        {% else %}
+        <div style="padding: 30px;">📭 No contact selected.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+</div>
+
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="{{ url_for ('static', filename='scripts/scripts.js') }}"></script>
+</body>
+</html>
+ 

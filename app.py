@@ -1,13 +1,14 @@
 import os
 import uuid
 import requests
-from datetime import date as dt_date
-from datetime import datetime, timedelta
-from flask_cors import CORS
-from flask import Flask, render_template, redirect, request, flash, url_for, session, jsonify
 import json
 import re
 import tempfile
+import together
+from flask_cors import CORS
+from datetime import date as dt_date
+from datetime import datetime
+from flask import Flask, render_template, redirect, request, flash, url_for, session, jsonify, g
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from sqlalchemy import func, Text, DateTime ,ForeignKey
@@ -17,8 +18,8 @@ from dotenv import load_dotenv
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from flask_login import current_user
 from flask_socketio import SocketIO, emit, join_room
-
 
 app = Flask(__name__)
 CORS(app)
@@ -32,6 +33,13 @@ socketio = SocketIO(app)
 app.secret_key = os.getenv('SECRET_KEY')
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 TOGETHER_MODEL = "mistralai/Mistral-7B-Instruct-v0.1"
+
+VIDEO_MAPPING = {
+    "knee": "static/assets/videos/knee.mp4",
+    "heart": "static/assets/videos/heart.mp4",
+    "kidney": "static/assets/videos/kidney.mp4",
+    "leg": "static/assets/videos/leg.mp4"
+}
 
 
 # Setup upload folder
@@ -87,6 +95,7 @@ def create_google_meet_event(summary, description, start_datetime, end_datetime,
     return event.get('hangoutLink')
 
 # make the user to be existin all the pages
+
 @app.context_processor
 def inject_user():
     user_id = session.get('user_id')
@@ -96,41 +105,44 @@ def inject_user():
             return dict(user=user)
     return dict(user=None)
 
-@socketio.on('join_room')
-def handle_join(data):
-    join_room(str(data['user_id']))  # Join personal room
-
 @socketio.on('send_message')
 def handle_send_message(data):
+    sender_id = int(data.get('sender_id'))
+    receiver_id = int(data.get('receiver_id'))
+    content = data.get('content')
+
+    if not sender_id or not receiver_id or not content:
+        return
+
     with SQLASession() as db_session:
-        msg = Message(
-            sender_id=data['sender_id'],
-            receiver_id=data['receiver_id'],
-            content=data['content']
-        )
+        msg = Message(sender_id=sender_id, receiver_id=receiver_id, content=content)
         db_session.add(msg)
         db_session.commit()
 
-        emit('receive_message', {
-            'sender_id': msg.sender_id,
-            'receiver_id': msg.receiver_id,
-            'content': msg.content,
-            'timestamp': msg.timestamp.isoformat()
-        }, room=str(msg.receiver_id))
+        # Prepare payload for clients
+        payload = {
+            'sender_id': sender_id,
+            'receiver_id': receiver_id,
+            'content': content,
+            'timestamp': msg.timestamp.strftime('%H:%M'),
+        }
 
-        emit('receive_message', {
-            'sender_id': msg.sender_id,
-            'receiver_id': msg.receiver_id,
-            'content': msg.content,
-            'timestamp': msg.timestamp.isoformat()
-        }, room=str(msg.sender_id))  # sender also gets message
+        # Emit message only to involved users
+        emit('receive_message', payload, room=str(sender_id))
+        emit('receive_message', payload, room=str(receiver_id))
+
+@socketio.on('join_room')
+def handle_join_room(data):
+    user_id = str(data.get('user_id'))
+    if user_id:
+        join_room(user_id)
+
 
 @socketio.on('typing')
 def handle_typing(data):
     emit('typing', {
         'sender_id': data['sender_id'],
     }, room=str(data['receiver_id']))
-
 
 
 @app.route('/')
@@ -162,6 +174,7 @@ def faq():
     return render_template('faq.html')
 
 # ==== register page ====
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -209,6 +222,7 @@ def register():
     return render_template('register.html')
 
 # ==== login route ====
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -246,6 +260,7 @@ def login():
     return render_template('login.html')
 
 # ==== logout route ====
+
 @app.route('/logout')
 def logout():
     session.clear()
@@ -253,13 +268,13 @@ def logout():
     return redirect(url_for('login'))
 
 # ==== AI chating ====
+
 @app.route('/api/ask', methods=['POST'])
 def ask():
     data = request.get_json()
     user_prompt = data.get("prompt", "").strip()
     full_prompt = (
         "You are a helpful, kind, and professional medical assistant. "
-        "Answer clearly and politely using friendly and natural language. Only use lists if there are distinct steps or multiple recommendations. For simple answers, just explain in a few clear sentences.\n\n"
         f"Question: {user_prompt}\n\nAnswer:"
     )
 
@@ -284,72 +299,50 @@ def ask():
     return jsonify({"error": "Failed to get AI response"}), 500
 
 # ====== diagnosis page ======
+@app.route("/diagnosis", methods=["POST"])
+def diagnosis():
+        return  render_template('diagnoses.html')
 
-@app.route('/diagnosis_page')
-def diagnosis_page():
-    return render_template('diagnosis.html')
 
-
-@app.route("/chat", methods=["POST"])
+@app.route('/chat', methods=['POST'])
 def chat():
-    data = request.get_json()
-    messages = data.get("messages", [])
+    user_question = request.json.get('question', '')
+    if not user_question:
+        return jsonify({'error': 'No question provided'}), 400
 
-    system_prompt = {
-        "role": "system",
-        "content": (
-            "You're a helpful medical AI assistant. You help the patient understand symptoms, answer health-related questions, "
-            "and when they ask to show a body part, you return a JSON like: "
-            "{\"action\": \"highlight\", \"target\": \"heart\", \"message\": \"Here is the heart.\"} "
-            "If they describe symptoms, reply normally AND include final diagnosis in JSON like: "
-            "{\"diagnosis\": \"...\", \"target\": \"...\"} at the end of your response."
-        )
-    }
-
-    messages.insert(0, system_prompt)
-
-    headers = {
-        "Authorization": f"Bearer {TOGETHER_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    body = {
-        "model": TOGETHER_MODEL,
-        "messages": messages,
-        "temperature": 0.7,
-        "top_p": 0.9,
-        "max_tokens": 500
-    }
-
+    # Call Together AI
     try:
-        res = requests.post("https://api.together.xyz/v1/chat/completions", headers=headers, json=body)
-        result = res.json()
-        reply = result["choices"][0]["message"]["content"]
-
-        # Extract both diagnosis or action commands
-        diagnosis = None
-        target = None
-        message = None
-        action = None
-
-        match = re.search(r'\{.*?\}', reply, re.DOTALL)
-        if match:
-            parsed = json.loads(match.group())
-            diagnosis = parsed.get("diagnosis")
-            target = parsed.get("target")
-            action = parsed.get("action")
-            message = parsed.get("message")
-
-        return jsonify({
-            "reply": reply,
-            "diagnosis": diagnosis,
-            "target": target,
-            "action": action,
-            "message": message
-        })
-
+        response = client.chat.completions.create(
+            model="mistralai/Mixtral-8x7B-Instruct-v0.1",
+            messages=[
+                {"role": "system", "content": "You are a helpful medical assistant."},
+                {"role": "user", "content": user_question}
+            ],
+            temperature=0.7,
+            max_tokens=300
+        )
+        ai_answer = response.choices[0].message.content
     except Exception as e:
-        return jsonify({"reply": f"Error: {str(e)}"})
+        ai_answer = "Sorry, there was an error processing your request."
+
+    # Determine video based on symptoms
+    video_mapping = {
+        "heart": "heart.mp4",
+        "kidney": "kidney.mp4",
+        "knee": "knees.mp4",
+        "leg": "legs.mp4"
+    }
+
+    video_file = None
+    for keyword, file in video_mapping.items():
+        if keyword in user_question.lower():
+            video_file = url_for('static', filename=f'assets/videos/{file}')
+            break
+
+    return jsonify({
+        'answer': ai_answer,
+        'video_url': video_file
+    })
 
 
 
@@ -357,6 +350,7 @@ def chat():
 @app.route('/patient_dash')
 def patient_dash():
     return render_template('patient_dash.html')
+
 
 # ==== patient appointment ====
 @app.route('/patient_appoin')
@@ -383,6 +377,7 @@ def patient_appoin():
             print(f"ID: {a.id}, Date: {a.date}")
 
         return render_template('patient_appoin.html', upcoming_appointments=upcoming_appointments, past_appointments=past_appointments)
+
 
 
 # ==== schedule an appointment ====
@@ -472,7 +467,7 @@ def patient_mess(contact_id):
         # جِب كل الدكاترة والنيرسات باش المريض يقدر يرسل ليهم
         contacts = db_session.query(User).filter(User.user_type.in_(['doctor', 'nurse'])).all()
         messages = []
-        contact = None
+        contact = None 
 
         if contact_id:
             contact = db_session.query(User).filter_by(id=contact_id).first()
@@ -504,20 +499,18 @@ def patient_mess(contact_id):
 @app.route('/patient_prf', methods=['GET', 'POST'])
 def patient_prf():
     user_id = session.get('user_id')
-    user_type = session.get('user_type')
-
-    if not user_id or user_type != 'patient':
-        flash('Access denied or please log in.', 'error')
+    if not user_id:
+        flash('Please log in to access profile.', 'error')
         return redirect(url_for('login'))
 
     with SQLASession() as db_session:
-        user = db_session.query(User).filter_by(id=user_id, user_type='patient').first()
+        user = db_session.query(User).filter_by(id=user_id).first()
         if not user:
-            flash('Patient profile not found.', 'error')
+            flash('User not found.', 'error')
             return redirect(url_for('login'))
 
         if request.method == 'POST':
-            # Same update logic here
+
             first_name = request.form.get('first_name')
             last_name = request.form.get('last_name')
             email = request.form.get('email')
@@ -555,6 +548,7 @@ def patient_prf():
             db_session.commit()
             flash('Profile updated successfully!', 'success')
             return redirect(url_for('patient_prf'))
+
 
         return render_template('patient_prf.html', user=user)
 
@@ -706,9 +700,18 @@ def doc_appoin():
 
         return render_template('doc_appoin.html', appointments=upcoming_appointments)
 
+        return render_template('patient_prf.html', user=user)
+
+
+@app.route('/doc_patient')
+def doc_patient():
+    return render_template('doc_patient.html')
+
+
 @app.route('/nurse_dash')
 def nurse_dash():
     return render_template('nurse_dash.html')
+
 
 @app.route('/nur_patient')
 def nur_patient():
@@ -809,5 +812,10 @@ def nur_prf():
         return render_template('nur_prf.html', user=user)
 
 
+@app.route('/nur_sttg')
+def nur_sttg():
+    return render_template('nur_sttg.html')
+
+
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, debug=True)

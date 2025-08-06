@@ -197,105 +197,58 @@ function showTab(event, tabId) {
   }
 }
 
-const chatBox = document.getElementById("chatBox");
-const chatInput = document.getElementById("chatInput");
-const model = document.getElementById("bodyModel");
-const popup = document.getElementById("hotspotPopup");
-let conversation = [];
+//messages
+document.addEventListener("DOMContentLoaded", () => {
+  const socket = io();
 
-function sendMessage() {
-  const text = chatInput.value.trim();
-  if (!text) return;
+  const currentUserId = document.getElementById("current-user-id").value;
+  const contactId = document.getElementById("contact-id").value;
 
-  conversation.push({ role: "user", content: text });
-  appendMessage("user", text);
-  chatInput.value = "";
+  const messageInput = document.getElementById("messageInput");
+  const sendButton = document.getElementById("sendButton");
+  const messagesContainer = document.getElementById("messagesContainer");
 
-  fetch("/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages: conversation }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.reply) {
-        appendMessage("ai", data.reply);
-        if (data.action === "highlight" && data.target) {
-          zoomToTarget(data.target, data.message);
-        } else if (data.diagnosis && data.target) {
-          zoomToTarget(data.target, data.diagnosis);
-        }
-      }
-    })
-    .catch((err) => {
-      console.error("Error:", err);
-      appendMessage("ai", "⚠️ An error occurred while contacting the server.");
-    });
-}
+  // Join own room so server can send you messages
+  socket.emit('join_room', { user_id: currentUserId });
 
-function appendMessage(sender, text) {
-  const msg = document.createElement("div");
-  msg.className = `chat-message ${sender}`;
-  msg.innerText = text;
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-function zoomToTarget(target, explanation) {
-  // Clear old hotspots and popup
-  model.querySelectorAll("button.Hotspot").forEach((el) => el.remove());
-  popup.style.display = "none";
-
-  const targets = {
-    head: { target: "0 1.65 0", orbit: "0deg 55deg 0.45m", pos: "0 1.65 0" },
-    heart: { target: "0 1.3 0.05", orbit: "0deg 45deg 0.5m", pos: "0 1.3 0" },
-    lungs: { target: "0 1.4 0.05", orbit: "0deg 45deg 0.5m", pos: "0 1.4 0" },
-    stomach: { target: "0 1.05 0", orbit: "0deg 50deg 0.45m", pos: "0 1.05 0" },
-    intestines: { target: "0 0.9 0", orbit: "0deg 50deg 0.45m", pos: "0 0.9 0" },
-    "right hand": { target: "0.3 1.0 0", orbit: "30deg 30deg 0.5m", pos: "0.3 1.0 0" },
-    "left hand": { target: "-0.3 1.0 0", orbit: "-30deg 30deg 0.5m", pos: "-0.3 1.0 0" },
-    legs: { target: "0 0.45 0", orbit: "0deg 75deg 0.5m", pos: "0 0.45 0" },
-    back: { target: "0 1.3 -0.3", orbit: "180deg 40deg 0.5m", pos: "0 1.3 -0.3" },
-  };
-
-  const def = targets[target.toLowerCase()] || targets.heart;
-
-  // Zoom model-viewer camera
-  model.cameraTarget = def.target;
-  model.cameraOrbit = def.orbit;
-  model.jumpCameraToGoal();
-
-  // Show hotspot with popup after zoom animation (~800ms)
-  setTimeout(() => {
-    const hotspot = document.createElement("button");
-    hotspot.className = "Hotspot";
-    hotspot.slot = "hotspot-1";
-    hotspot.setAttribute("data-position", def.pos);
-    hotspot.setAttribute("data-normal", "0 1 0");
-    model.appendChild(hotspot);
-
-    hotspot.onclick = (e) => {
-      const rect = hotspot.getBoundingClientRect();
-      popup.style.left = `${rect.left + 25}px`;
-      popup.style.top = `${rect.top - 40}px`;
-      popup.innerText = explanation || "Affected area";
-      popup.style.display = "block";
-      e.stopPropagation();
-    };
-
-    document.onclick = () => {
-      popup.style.display = "none";
-    };
-  }, 800);
-}
-
-// Support Enter key to send message
-chatInput.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    sendMessage();
-    e.preventDefault();
+  // Append message to chat area
+  function appendMessage(data) {
+    const isMe = data.sender_id == currentUserId;
+    const div = document.createElement("div");
+    div.className = `msg-bubble ${isMe ? 'right' : 'left'}`;
+    div.innerHTML = `<p>${data.content}</p><span class="msg-time">${data.timestamp}</span>`;
+    messagesContainer.appendChild(div);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
-});
 
-// Expose globally for button onclick
-window.sendMessage = sendMessage;
+  // Send message via socket
+  sendButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    const message = messageInput.value.trim();
+    if (!message) return;
+
+    socket.emit('send_message', {
+      sender_id: currentUserId,
+      receiver_id: contactId,
+      content: message
+    });
+
+    appendMessage({ sender_id: currentUserId, content: message, timestamp: new Date().toLocaleTimeString() });
+    messageInput.value = '';
+  });
+
+  messageInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      sendButton.click();
+    }
+  });
+
+  // Listen for incoming messages
+  socket.on('receive_message', (data) => {
+    // Only show messages from your current chat contact
+    if (data.sender_id == contactId && data.receiver_id == currentUserId) {
+      appendMessage(data);
+    }
+  });
+});
